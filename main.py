@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
+from openai import OpenAI
 import os
 import requests
 
@@ -23,7 +24,7 @@ def auth_google():
       f"?client_id={client_id}"
       f"&redirect_uri={redirect_uri}"
       "&response_type=code"
-      "&scope=https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/calendar"
+      "&scope=https://www.googleapis.com/auth/gmail.modify https://www.googleapis.com/auth/calendar"
       "&access_type=offline"
       "&prompt=consent"
     )
