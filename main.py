@@ -5,6 +5,8 @@ import requests
 
 app = FastAPI()
 
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
 TOKEN=None
 
 @app.get("/")
@@ -74,3 +76,51 @@ def calendar():
     )
 
     return r.json()
+
+@app.get("/sort-mails-ai")
+def sort_mails_ai():
+
+    access_token = TOKEN["access_token"]
+
+    headers = {
+      "Authorization": f"Bearer {access_token}"
+    }
+
+    mails = requests.get(
+      "https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=5",
+      headers=headers
+    ).json()
+
+    results=[]
+
+    for m in mails.get("messages",[]):
+
+        msg=requests.get(
+         f"https://gmail.googleapis.com/gmail/v1/users/me/messages/{m['id']}",
+         headers=headers
+        ).json()
+
+        snippet=msg.get("snippet","")
+
+        ai=client.chat.completions.create(
+          model="gpt-4.1-mini",
+          messages=[
+            {
+             "role":"system",
+             "content":"Klasyfikuj email do jednej kategorii: Rachunki, Zakupy, Pilne, Newsletter, Inne. Zwróć tylko nazwę kategorii."
+            },
+            {
+             "role":"user",
+             "content":snippet
+            }
+          ]
+        )
+
+        category=ai.choices[0].message.content
+
+        results.append({
+          "mail":snippet,
+          "category":category
+        })
+
+    return results
