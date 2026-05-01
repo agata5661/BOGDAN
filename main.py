@@ -138,6 +138,7 @@ Zasady:
 - giełda, krypto, trading, broker, forex, akcje → Trading
 - rekrutacja, praca, oferta pracy, klient, projekt → Praca
 - wiadomość wymaga odpowiedzi → Do_odpisania
+- InPost, DPD, DHL, UPS, FedEx, GLS, Orlen Paczka, Poczta Polska, kurier, paczkomat, tracking, numer przesyłki, dostawa, odbiór paczki → Przesyłki
 
 Zwróć tylko nazwę kategorii.
 """
