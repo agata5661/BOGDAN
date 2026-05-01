@@ -10,6 +10,7 @@ app = FastAPI()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 TOKEN = None
+PAGE_TOKEN = None
 
 @app.get("/")
 def root():
@@ -188,3 +189,123 @@ Zwróć tylko nazwę kategorii.
         })
 
     return results
+
+@app.get("/sort-all-mails-ai")
+def sort_all_mails_ai():
+    global PAGE_TOKEN
+
+    access_token = TOKEN["access_token"]
+
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "application/json"
+    }
+
+    labels_resp = requests.get(
+        "https://gmail.googleapis.com/gmail/v1/users/me/labels",
+        headers=headers
+    ).json()
+
+    existing_labels = {
+        label["name"]: label["id"]
+        for label in labels_resp.get("labels", [])
+    }
+
+    url = "https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=25&q=-in:trash -in:spam"
+
+    if PAGE_TOKEN:
+        url += f"&pageToken={PAGE_TOKEN}"
+
+    mails = requests.get(url, headers=headers).json()
+
+    PAGE_TOKEN = mails.get("nextPageToken")
+
+    results = []
+
+    for m in mails.get("messages", []):
+        msg = requests.get(
+            f"https://gmail.googleapis.com/gmail/v1/users/me/messages/{m['id']}",
+            headers=headers
+        ).json()
+
+        snippet = msg.get("snippet", "")
+
+        ai = client.chat.completions.create(
+            model="gpt-4.1-mini",
+            messages=[
+                {
+                    "role": "system",
+                    "content": """
+Klasyfikuj email do jednej kategorii:
+Ważne
+Rachunki
+Zakupy
+Reklamy
+Praca
+Do_odpisania
+Przesyłki
+Trading
+
+Zasady:
+- InPost, DPD, DHL, UPS, FedEx, GLS, Orlen Paczka, Poczta Polska, kurier, paczkomat, tracking, numer przesyłki, dostawa, odbiór paczki → Przesyłki
+- reklamy, promocje, newslettery → Reklamy
+- pilne, awarie, ważne info → Ważne
+- faktury, płatności, rozliczenia → Rachunki
+- zamówienia, zakupy, paragony → Zakupy
+- giełda, krypto, trading, broker, forex, akcje → Trading
+- rekrutacja, praca, oferta pracy, klient, projekt → Praca
+- wiadomość wymaga odpowiedzi → Do_odpisania
+
+Zwróć tylko nazwę kategorii.
+"""
+                },
+                {
+                    "role": "user",
+                    "content": snippet
+                }
+            ]
+        )
+
+        category = ai.choices[0].message.content.strip()
+
+        label_map = {
+            "Ważne": "Ważne",
+            "Rachunki": "Rachunki",
+            "Zakupy": "Zakupy",
+            "Reklamy": "Reklamy",
+            "Praca": "Praca",
+            "Do_odpisania": "Do odpisania",
+            "Przesyłki": "Przesyłki",
+            "Trading": "Trading"
+        }
+
+        label_name = label_map.get(category)
+        label_id = existing_labels.get(label_name)
+
+        label_applied = False
+
+        if label_id:
+            modify_resp = requests.post(
+                f"https://gmail.googleapis.com/gmail/v1/users/me/messages/{m['id']}/modify",
+                headers=headers,
+                json={
+                    "addLabelIds": [label_id]
+                }
+            )
+
+            if modify_resp.status_code in [200, 204]:
+                label_applied = True
+
+        results.append({
+            "category": category,
+            "label_name": label_name,
+            "label_applied": label_applied,
+            "mail": snippet
+        })
+
+    return {
+        "processed": len(results),
+        "done": PAGE_TOKEN is None,
+        "next_page_exists": PAGE_TOKEN is not None,
+        "results": results
+    }
