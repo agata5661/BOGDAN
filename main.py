@@ -108,7 +108,22 @@ def sort_mails_ai():
           messages=[
             {
              "role":"system",
-             "content":"Klasyfikuj email do jednej kategorii: Rachunki, Zakupy, Pilne, Newsletter, Inne. Zwróć tylko nazwę kategorii."
+             "content":
+"""
+Klasyfikuj email do jednej kategorii:
+Ważne
+Rachunki
+Zakupy
+Reklamy
+Praca
+Do_odpisania
+
+Zasady:
+- reklamy, promocje, newslettery → Reklamy
+- pilne, awarie, ważne info → Ważne
+
+Zwróć tylko nazwę kategorii.
+"""
             },
             {
              "role":"user",
