@@ -225,7 +225,7 @@ def sort_all_mails_ai():
         for label in labels_resp.get("labels", [])
     }
 
-    url = "https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=25&q=-in:trash -in:spam"
+    url = "https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=5&q=-in:trash -in:spam"
 
     if PAGE_TOKEN:
         url += f"&pageToken={PAGE_TOKEN}"
@@ -251,7 +251,7 @@ def sort_all_mails_ai():
                     "role": "system",
                     "content": """
 Klasyfikuj email do jednej kategorii:
-Ważne
+Pilne
 Rachunki
 Zakupy
 Reklamy
@@ -259,6 +259,7 @@ Praca
 Do_odpisania
 Przesyłki
 Trading
+ChatGPT
 
 Zasady:
 - InPost, DPD, DHL, UPS, FedEx, GLS, Orlen Paczka, Poczta Polska, kurier, paczkomat, tracking, numer przesyłki, dostawa, odbiór paczki → Przesyłki
