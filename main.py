@@ -323,3 +323,7 @@ Zwróć tylko nazwę kategorii.
         "next_page_exists": PAGE_TOKEN is not None,
         "results": results
     }
+
+@app.get("/run-agent")
+def run_agent():
+    return sort_all_mails_ai()
