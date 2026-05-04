@@ -243,6 +243,8 @@ def sort_all_mails_ai():
         ).json()
 
         snippet = msg.get("snippet", "")
+        if not snippet or len(snippet.strip()) < 10:
+    continue
 
         ai = client.chat.completions.create(
             model="gpt-4.1-mini",
