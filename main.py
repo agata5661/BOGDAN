@@ -174,7 +174,7 @@ Zwróć tylko nazwę kategorii.
             "Praca": "Praca",
             "Do_odpisania": "Do odpisania",
             "Przesyłki": "Przesyłki",
-            "Trading": "Trading"
+            "Trading": "Trading",
             "ChatGPT": "ChatGPT",
         }
 
@@ -283,14 +283,15 @@ Zwróć tylko nazwę kategorii.
         category = ai.choices[0].message.content.strip()
 
         label_map = {
-            "Ważne": "Ważne",
+            "Pilne": "Pilne",
             "Rachunki": "Rachunki",
             "Zakupy": "Zakupy",
             "Reklamy": "Reklamy",
             "Praca": "Praca",
             "Do_odpisania": "Do odpisania",
             "Przesyłki": "Przesyłki",
-            "Trading": "Trading"
+            "Trading": "Trading",
+            "ChatGPT": "ChatGPT",
         }
 
         label_name = label_map.get(category)
