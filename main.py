@@ -151,7 +151,7 @@ Zasady:
 
 - SRK, Spółka Restrukturyzacji Kopalń, mail od a.mirga@srk.com.pl, OLX, olx.pl → Praca
 - rekrutacja, praca, oferta pracy, klient, projekt, ogłoszenie, aplikacja, CV → Praca
-
+- Do_odpisania wybieraj jeśli wiadomość zawiera pytanie, prośbę lub wymaga odpowiedzi
 - ChatGPT, OpenAI, Open AI, Railway, GitHub, Bithub, API key, deploy, deployment, build failed, crash, logs, tokeny, billing OpenAI → ChatGPT
 
 Zwróć tylko nazwę kategorii.
