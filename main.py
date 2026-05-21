@@ -1,3 +1,4 @@
+from fastapi import Request
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 from openai import OpenAI
@@ -212,3 +213,14 @@ def sort_all_mails_ai():
 @app.get("/run-agent")
 def run_agent():
     return sort_all_mails_ai()
+
+@app.post("/assistant")
+async def assistant(request: Request):
+
+    data = await request.json()
+
+    text = data.get("message", "")
+
+    return {
+        "message": f"Otrzymałem polecenie: {text}"
+    }
