@@ -68,9 +68,10 @@ LABEL_MAP = {
 # PODSTAWY
 # =========================
 
-@app.get("/")
+@app.get("/", response_class=HTMLResponse)
 def root():
-    return {"agent": "dziala"}
+    with open("index.html", "r", encoding="utf-8") as f:
+        return f.read()
 
 @app.get("/auth/google")
 def auth_google():
