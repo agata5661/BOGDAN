@@ -1,6 +1,6 @@
 from fastapi import Request
 from fastapi import FastAPI
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, HTMLResponse
 from openai import OpenAI
 import os
 import requests
