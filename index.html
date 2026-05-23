@@ -17,7 +17,6 @@
 body{
     font-family:Arial,sans-serif;
     background:#2d1b25;
-    color:#4d2c39;
     height:100vh;
     display:flex;
     flex-direction:column;
@@ -27,6 +26,7 @@ body{
     text-align:center;
     padding:25px 15px;
     background:#2d1b25;
+    border-bottom:1px solid rgba(255,255,255,0.08);
 }
 
 .logo{
@@ -55,27 +55,14 @@ body{
     padding:20px;
 }
 
-.message{
-    max-width:85%;
-    margin-bottom:18px;
-    padding:16px;
-    border-radius:24px;
-    line-height:1.5;
-    box-shadow:0 4px 12px rgba(0,0,0,0.15);
-}
-
-.bot{
+.welcome{
     background:#ffe2ec;
     border:2px solid #ff9dc2;
     color:#4d2c39;
-    border-top-left-radius:8px;
-}
-
-.user{
-    background:#ea5d97;
-    color:white;
-    margin-left:auto;
-    border-top-right-radius:8px;
+    border-radius:24px;
+    padding:18px;
+    max-width:85%;
+    box-shadow:0 4px 12px rgba(0,0,0,0.15);
 }
 
 .quick{
@@ -126,11 +113,6 @@ input{
     cursor:pointer;
 }
 
-.send:hover,
-.mic:hover{
-    opacity:0.9;
-}
-
 </style>
 </head>
 
@@ -150,40 +132,38 @@ input{
 
 </div>
 
-<div class="chat">
+<div class="chat" id="chat">
 
-    <div class="message bot">
-        🌸 Cześć Agata!<br><br>
+    <div class="welcome">
+        🌸 Witaj Agata
 
-        Mogę pomóc Ci z:
         <br><br>
-        📅 kalendarzem<br>
-        📧 mailami<br>
-        ⏰ przypomnieniami<br>
-        📝 zadaniami
-    </div>
 
-    <div class="message user">
-        Dodaj jutro trening brzucha o 16:00 💪
+        Napisz wiadomość lub użyj mikrofonu.
+
+        <br><br>
+
+        Mogę pomóc z kalendarzem, mailami, przypomnieniami i organizacją dnia.
     </div>
 
 </div>
 
 <div class="quick">
 
-    <button>📅 Co mam jutro?</button>
+    <button>📅 Kalendarz</button>
 
-    <button>⏰ Dodaj przypomnienie</button>
+    <button>📧 Maile</button>
 
-    <button>📧 Sprawdź maile</button>
+    <button>⏰ Przypomnienia</button>
 
-    <button>📝 Dodaj zadanie</button>
+    <button>📝 Zadania</button>
 
 </div>
 
 <div class="input-area">
 
     <input
+        id="message"
         type="text"
         placeholder="Napisz wiadomość..."
     >
