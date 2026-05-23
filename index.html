@@ -37,3 +37,206 @@ body{
 }
 
 .title{
+    color:#ffd5e6;
+    font-size:32px;
+    font-weight:bold;
+    margin-top:10px;
+}
+
+.subtitle{
+    color:#ffb7d1;
+    font-size:14px;
+    margin-top:6px;
+}
+
+.chat{
+    flex:1;
+    overflow-y:auto;
+    padding:20px;
+}
+
+.message{
+    max-width:85%;
+    margin-bottom:18px;
+    padding:16px;
+    border-radius:24px;
+    line-height:1.5;
+    box-shadow:0 4px 12px rgba(0,0,0,0.15);
+}
+
+.bot{
+    background:#ffe2ec;
+    border:2px solid #ff9dc2;
+    color:#4d2c39;
+    border-top-left-radius:8px;
+}
+
+.user{
+    background:#ea5d97;
+    color:white;
+    margin-left:auto;
+    border-top-right-radius:8px;
+}
+
+.quick{
+    padding:0 20px 15px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+}
+
+.quick button{
+    background:#ffe2ec;
+    color:#4d2c39;
+    border:2px solid #ff9dc2;
+    border-radius:18px;
+    padding:12px;
+    font-size:14px;
+    font-weight:bold;
+}
+
+.input-area{
+    background:#3a2330;
+    padding:15px;
+    display:flex;
+    gap:10px;
+    align-items:center;
+}
+
+input{
+    flex:1;
+    border:none;
+    outline:none;
+    background:#ffe2ec;
+    color:#4d2c39;
+    border-radius:30px;
+    padding:14px 18px;
+    font-size:16px;
+}
+
+.send,
+.mic{
+    width:50px;
+    height:50px;
+    border:none;
+    border-radius:50%;
+    background:#ea5d97;
+    color:white;
+    font-size:20px;
+    cursor:pointer;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+
+    <img src="/static/logo.png" class="logo">
+
+    <div class="title">
+        Asystent Bogdan
+    </div>
+
+    <div class="subtitle">
+        Twój osobisty asystent AI
+    </div>
+
+</div>
+
+<div class="chat" id="chat">
+
+    <div class="message bot">
+        🌸 Witaj Agata
+
+        <br><br>
+
+        Napisz wiadomość lub użyj mikrofonu.
+
+        <br><br>
+
+        Mogę pomóc z kalendarzem, mailami, przypomnieniami i organizacją dnia.
+    </div>
+
+</div>
+
+<div class="quick">
+
+    <button>📅 Kalendarz</button>
+
+    <button>📧 Maile</button>
+
+    <button>⏰ Przypomnienia</button>
+
+    <button>📝 Zadania</button>
+
+</div>
+
+<div class="input-area">
+
+    <input
+        id="message"
+        type="text"
+        placeholder="Napisz wiadomość..."
+    >
+
+    <button class="mic">🎤</button>
+
+    <button class="send">➤</button>
+
+</div>
+
+<script>
+
+const sendButton = document.querySelector(".send");
+const messageInput = document.getElementById("message");
+const chat = document.getElementById("chat");
+
+async function sendMessage() {
+
+    const text = messageInput.value.trim();
+
+    if (!text) return;
+
+    const userMessage = document.createElement("div");
+    userMessage.className = "message user";
+    userMessage.innerText = text;
+
+    chat.appendChild(userMessage);
+
+    messageInput.value = "";
+
+    const response = await fetch("/assistant", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            message: text
+        })
+    });
+
+    const data = await response.json();
+
+    const botMessage = document.createElement("div");
+    botMessage.className = "message bot";
+    botMessage.innerText = data.message;
+
+    chat.appendChild(botMessage);
+
+    chat.scrollTop = chat.scrollHeight;
+}
+
+sendButton.addEventListener("click", sendMessage);
+
+messageInput.addEventListener("keypress", function(e){
+    if(e.key === "Enter"){
+        sendMessage();
+    }
+});
+
+</script>
+
+</body>
+</html>
