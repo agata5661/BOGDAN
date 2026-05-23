@@ -3,90 +3,95 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Twój osobisty asystent</title>
+
+<title>Asystent Bogdan</title>
 
 <style>
-*{box-sizing:border-box}
+
+*{
+    box-sizing:border-box;
+}
 
 body{
     margin:0;
     min-height:100vh;
     font-family:Arial,sans-serif;
-    background:linear-gradient(180deg,#ffb6d9,#3b061b);
-    color:white;
+    background:linear-gradient(180deg,#ffe8f4,#ffdff0);
     display:flex;
     flex-direction:column;
 }
 
 .header{
+    background:linear-gradient(135deg,#f8b8d8,#d8c2ff);
     text-align:center;
-    padding:28px 16px 18px;
+    padding:20px;
+    box-shadow:0 4px 15px rgba(0,0,0,0.08);
 }
 
 .logo{
-    width:260px;
+    width:220px;
     max-width:90%;
-    border-radius:24px;
+    display:block;
+    margin:0 auto;
 }
 
 .subtitle{
-    margin-top:10px;
-    font-size:15px;
-    opacity:.9;
+    color:#6b4f82;
+    font-size:14px;
+    margin-top:8px;
 }
 
 .chat{
     flex:1;
-    padding:18px;
+    padding:16px;
     overflow-y:auto;
 }
 
 .message{
-    max-width:82%;
+    max-width:80%;
     padding:14px 16px;
     border-radius:22px;
     margin-bottom:14px;
-    font-size:17px;
-    line-height:1.35;
-    box-shadow:0 8px 22px rgba(0,0,0,.18);
+    line-height:1.4;
+    box-shadow:0 4px 10px rgba(0,0,0,0.08);
 }
 
 .bot{
-    background:white;
-    color:#331021;
-    border-top-left-radius:6px;
+    background:#efe4ff;
+    color:#4a2f63;
+    border-top-left-radius:8px;
 }
 
 .user{
-    background:#ff4fa0;
-    color:white;
+    background:#f8b8d8;
+    color:#4a2f63;
     margin-left:auto;
-    border-top-right-radius:6px;
+    border-top-right-radius:8px;
 }
 
 .quick{
     display:grid;
     grid-template-columns:1fr 1fr;
     gap:10px;
-    padding:0 18px 12px;
+    padding:0 16px 16px;
 }
 
 .quick button{
-    background:rgba(255,255,255,.18);
-    color:white;
-    border:1px solid rgba(255,255,255,.25);
-    padding:12px;
+    border:none;
     border-radius:18px;
+    padding:12px;
+    background:#efe4ff;
+    color:#4a2f63;
     font-size:15px;
+    font-weight:bold;
 }
 
 .input-area{
     display:flex;
     gap:8px;
     padding:14px;
-    background:rgba(20,0,10,.88);
-    position:sticky;
-    bottom:0;
+    background:white;
+    border-top:1px solid #f0d9ea;
 }
 
 input{
@@ -94,38 +99,52 @@ input{
     border:none;
     border-radius:22px;
     padding:14px 16px;
+    background:#f7f0ff;
     font-size:16px;
     outline:none;
 }
 
-.send,.mic{
+.send,
+.mic{
     border:none;
     border-radius:50%;
     width:48px;
     height:48px;
+    background:#d8c2ff;
+    color:#4a2f63;
     font-size:20px;
-    background:#ff4fa0;
-    color:white;
 }
+
 </style>
 </head>
 
 <body>
 
 <div class="header">
+
     <img src="/static/logo.png" class="logo">
-    <div class="subtitle">Twój osobisty asystent AI</div>
+
+    <div class="subtitle">
+        Twój osobisty asystent AI
+    </div>
+
 </div>
 
-<div class="chat" id="chat">
+<div class="chat">
+
     <div class="message bot">
         Cześć Agata 👋<br><br>
-        Jestem gotowy do pomocy z kalendarzem, mailami, przypomnieniami i zadaniami.
+        Jestem gotowy do pomocy z:
+        <br>📅 kalendarzem
+        <br>📧 mailami
+        <br>⏰ przypomnieniami
+        <br>📝 zadaniami
     </div>
 
     <div class="message user">
         Dodaj jutro trening brzucha o 16:00
     </div>
+
 </div>
 
 <div class="quick">
@@ -136,9 +155,16 @@ input{
 </div>
 
 <div class="input-area">
-    <input id="messageInput" type="text" placeholder="Napisz lub podyktuj polecenie...">
+
+    <input
+        type="text"
+        placeholder="Napisz lub podyktuj polecenie..."
+    >
+
     <button class="mic">🎤</button>
+
     <button class="send">➤</button>
+
 </div>
 
 </body>
