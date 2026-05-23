@@ -1,20 +1,18 @@
-from fastapi import Request
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.responses import RedirectResponse, HTMLResponse
+from fastapi.staticfiles import StaticFiles
 from openai import OpenAI
 import os
 import requests
 
 app = FastAPI()
 
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 TOKEN = None
 PAGE_TOKEN = None
-
-# =========================
-# KONFIG
-# =========================
 
 PROMPT = """
 Klasyfikuj email do jednej kategorii:
@@ -32,21 +30,13 @@ ChatGPT
 Zasady:
 - reklamy, promocje, newslettery → Reklamy
 - reklamy NIGDY nie mogą trafić do Do_odpisania
-
 - jeśli mail wymaga odpowiedzi → Do_odpisania
-
 - InPost, DPD, DHL, UPS, FedEx → Przesyłki
-
 - pilne, deadline → Pilne
-
 - faktura, rachunek, płatność → Rachunki
-
 - zamówienie, allegro, temu, payu → Zakupy
-
 - trading, krypto, fibonacci → Trading
-
 - SRK, OLX, praca → Praca
-
 - ChatGPT, OpenAI, Railway, GitHub → ChatGPT
 
 Zwróć tylko nazwę kategorii.
@@ -64,14 +54,12 @@ LABEL_MAP = {
     "ChatGPT": "ChatGPT",
 }
 
-# =========================
-# PODSTAWY
-# =========================
 
 @app.get("/", response_class=HTMLResponse)
 def root():
     with open("index.html", "r", encoding="utf-8") as f:
         return f.read()
+
 
 @app.get("/auth/google")
 def auth_google():
@@ -89,6 +77,7 @@ def auth_google():
     )
     return RedirectResponse(url)
 
+
 @app.get("/oauth/callback")
 def callback(code: str):
     global TOKEN
@@ -100,16 +89,13 @@ def callback(code: str):
             "client_id": os.getenv("GOOGLE_CLIENT_ID"),
             "client_secret": os.getenv("GOOGLE_CLIENT_SECRET"),
             "redirect_uri": os.getenv("GOOGLE_REDIRECT_URI"),
-            "grant_type": "authorization_code"
-        }
+            "grant_type": "authorization_code",
+        },
     )
 
     TOKEN = r.json()
     return {"success": True, "message": "Google connected"}
 
-# =========================
-# FUNKCJA AI
-# =========================
 
 def classify_and_label(m_id, snippet, headers, existing_labels):
     try:
@@ -117,8 +103,8 @@ def classify_and_label(m_id, snippet, headers, existing_labels):
             model="gpt-4.1-mini",
             messages=[
                 {"role": "system", "content": PROMPT},
-                {"role": "user", "content": snippet}
-            ]
+                {"role": "user", "content": snippet},
+            ],
         )
 
         category = ai.choices[0].message.content.strip()
@@ -126,7 +112,8 @@ def classify_and_label(m_id, snippet, headers, existing_labels):
     except Exception as e:
         return {
             "mail": snippet,
-            "error": str(e)
+            "error": str(e),
+            "label_applied": False,
         }
 
     label_name = LABEL_MAP.get(category)
@@ -135,23 +122,20 @@ def classify_and_label(m_id, snippet, headers, existing_labels):
     applied = False
 
     if label_id:
-        requests.post(
+        response = requests.post(
             f"https://gmail.googleapis.com/gmail/v1/users/me/messages/{m_id}/modify",
             headers=headers,
-            json={"addLabelIds": [label_id]}
+            json={"addLabelIds": [label_id]},
         )
-        applied = True
+        applied = response.status_code in [200, 204]
 
     return {
         "mail": snippet,
         "category": category,
         "label_name": label_name,
-        "label_applied": applied
+        "label_applied": applied,
     }
 
-# =========================
-# SORTOWANIE
-# =========================
 
 @app.get("/sort-all-mails-ai")
 def sort_all_mails_ai():
@@ -164,16 +148,17 @@ def sort_all_mails_ai():
 
     headers = {
         "Authorization": f"Bearer {access_token}",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
     }
 
     labels_resp = requests.get(
         "https://gmail.googleapis.com/gmail/v1/users/me/labels",
-        headers=headers
+        headers=headers,
     ).json()
 
     existing_labels = {
-        l["name"]: l["id"] for l in labels_resp.get("labels", [])
+        label["name"]: label["id"]
+        for label in labels_resp.get("labels", [])
     }
 
     url = "https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=5"
@@ -190,12 +175,11 @@ def sort_all_mails_ai():
     for m in mails.get("messages", []):
         msg = requests.get(
             f"https://gmail.googleapis.com/gmail/v1/users/me/messages/{m['id']}",
-            headers=headers
+            headers=headers,
         ).json()
 
         snippet = msg.get("snippet", "")
 
-        # 🔥 TU BYŁ BŁĄD — JUŻ NAPRAWIONE
         if not snippet or len(snippet.strip()) < 10:
             continue
 
@@ -208,18 +192,18 @@ def sort_all_mails_ai():
     return {
         "processed": len(results),
         "done": PAGE_TOKEN is None,
-        "results": results
+        "results": results,
     }
+
 
 @app.get("/run-agent")
 def run_agent():
     return sort_all_mails_ai()
 
+
 @app.post("/assistant")
 async def assistant(request: Request):
-
     data = await request.json()
-
     text = data.get("message", "")
 
     return {
